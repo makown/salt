@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Startup script for the Apache2.0.X Web Server
+# Fixed by Comsenz - Nanu (nanu@discuz.com)
+
+# chkconfig: - 85 15
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+if [ -f /etc/sysconfig/httpd ]; then
+. /etc/sysconfig/httpd
+fi
+
+INITLOG_ARGS=""
+
+apachectl=/usr/local/apache/bin/apachectl
+httpd=${HTTPD-/usr/local/apache/bin/httpd}
+prog=httpd
+RETVAL=0
+
+start() {
+echo -n $"Starting $prog: "
+daemon $httpd $OPTIONS
+RETVAL=$?
+echo
+[ $RETVAL = 0 ] && touch /var/lock/subsys/httpd
+return $RETVAL
+}
+stop() {
+echo -n $"Stopping $prog: "
+killproc $httpd
+RETVAL=$?
+echo
+[ $RETVAL = 0 ] && rm -f /var/lock/subsys/httpd /var/run/httpd.pid
+}
+reload() {
+echo -n $"Reloading $prog: "
+killproc $httpd -HUP
+RETVAL=$?
+echo
+}
+
+case "$1" in
+start)
+start
+ ;;
+stop)
+stop
+ ;;
+status)
+status $httpd
+RETVAL=$?
+ ;;
+restart)
+stop
+start
+ ;;
+condrestart)
+if [ -f /var/run/httpd.pid ] ; then
+stop
+start
+fi
+ ;;
+reload)
+reload
+ ;;
+graceful|help|configtest|fullstatus)
+$apachectl $@
+RETVAL=$?
+ ;;
+*)
+echo $"Usage: $prog
+
+{start|stop|restart|condrestart|reload|status|fullstatus|graceful|help|configtest}"
+exit 1
+esac
+
+exit $RETVAL

@@ -1,0 +1,4 @@
+include:
+  - .else
+  - .install
+  - .initd

@@ -1,0 +1,24 @@
+httpd:
+  iptables.append:
+    - table: filter
+    - chain: INPUT
+    - jump: ACCEPT
+    - match: state
+    - connstate: NEW,ESTABLISHED
+    - proto: tcp
+    - source: 192.168.168.168
+    - destination:  200.200.200.200
+    - dport: 80:81
+    - sport: 1025
+    - save: True
+
+salt:
+  iptables.append:
+    - table: filter
+    - chain: INPUT
+    - jump: ACCEPT
+    - match: state
+    - proto: tcp
+    - connstate: new
+    - dport: 4505
+    - save: True
